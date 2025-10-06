@@ -1,7 +1,17 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      python: 3.12
+    commands:
+      - pip install aws-sam-cli
+      - pip install -r requirements.txt
   build:
     commands:
-       - pip install -r hello_world/requirements.txt
-       - sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --no-progressbar --debug
+      - sam build
+      - sam package --s3-bucket my-pipeline-artifacts-bucket --output-template-file packaged.yaml
+
+artifacts:
+  files:
+    - packaged.yaml
