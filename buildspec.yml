@@ -6,7 +6,7 @@ phases:
       python: 3.12
     commands:
       - pip install aws-sam-cli
-      - pip install -r requirements.txt
+      - pip install -r hello_world/requirements.txt
   build:
     commands:
       - sam build
