@@ -4,4 +4,4 @@ phases:
   build:
     commands:
        - pip install -r hello_world/requirements.txt
-       - sam deploy -no-confirm-changeset -no-fail-on-empty-changeset -no-progressbar -debug
+       - sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --no-progressbar --debug
