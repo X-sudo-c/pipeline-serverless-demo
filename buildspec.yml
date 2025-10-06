@@ -1,0 +1,23 @@
+version: 0.2
+
+env:
+  variables:
+    STAGE: "dev"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - pip install -r requirements.txt
+      - pip install pytest
+      - npm install -g serverless
+  pre_build:
+    commands:
+      - pytest tests/ --maxfail=1 --disable-warnings -q
+  build:
+    commands:
+      - serverless deploy --stage $STAGE
+artifacts:
+  files:
+    - '**/*'

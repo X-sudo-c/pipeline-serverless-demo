@@ -1,0 +1,17 @@
+service: serverless-ping-app
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: python3.11
+  region: us-east-1
+  stage: dev
+
+functions:
+  check:
+    handler: handler.check_host
+    events:
+      - httpApi:
+          path: /check
+          method: post
