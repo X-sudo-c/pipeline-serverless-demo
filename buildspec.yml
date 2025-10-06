@@ -9,7 +9,7 @@ phases:
   build:
     commands:
       - sam build
-      - sam package --s3-bucket my-pipeline-artifacts-bucket --output-template-file packaged.yaml
+      - sam package --resolve-s3 --output-template-file packaged.yaml
 
 artifacts:
   files:
