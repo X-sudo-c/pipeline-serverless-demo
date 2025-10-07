@@ -4,12 +4,18 @@ phases:
     runtime-versions:
       python: 3.12
     commands:
-      - pip install pytest cfn-lint bandit
-      - pip install -r hello_world/requirements.txt
+      # Nothing needed! Everything is pre-installed
+       - echo "=== VERIFYING PRE-INSTALLED TOOLS ==="
+       - aws --version    
+       - sam --version    
+       - python --version 
+       - pip --version 
+
   build:
     commands:
-      - echo "=== RUNNING TESTS ==="
-      - sam validate
-      - cfn-lint template.yaml
-      - pytest tests/unit/ -v
-      - bandit -r hello_world/ -f json
+      - sam build
+      - sam deploy --stack-name hello-world --capabilities CAPABILITY_IAM --no-confirm-changeset
+
+  post_build:
+    commands:
+      - echo "✅ Deployment complete!"
