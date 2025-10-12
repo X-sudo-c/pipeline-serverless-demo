@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pipeline Serverless Demo</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <main class="container">
+    <h1>Pipeline Serverless Demo</h1>
+
+    <section class="card">
+      <h2>API Configuration</h2>
+      <p>Enter your Hello API endpoint (e.g., https://xxxx.execute-api.us-east-1.amazonaws.com/Prod/hello).</p>
+      <div class="row">
+        <input id="apiUrlInput" type="url" placeholder="https://.../Prod/hello" />
+        <button id="saveBtn">Save</button>
+      </div>
+      <small id="savedNote" class="muted"></small>
+    </section>
+
+    <section class="card">
+      <h2>Call Lambda</h2>
+      <div class="row">
+        <button id="callBtn">Call /hello</button>
+      </div>
+      <pre id="result" class="result" aria-live="polite"></pre>
+    </section>
+
+    <footer class="muted">
+      Static webapp. Configure the API URL above; persisted in your browser.
+    </footer>
+  </main>
+</body>
+</html>
+
+

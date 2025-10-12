@@ -10,13 +10,25 @@ phases:
        - sam --version    
        - python --version 
        - pip --version 
+       - echo "omg everthing works and my pipline is healthy"
 
   build:
     commands:
       - sam build
       - sam package --resolve-s3 --output-template-file packaged.yaml
+      - echo "Copying webapp assets"
+      - mkdir -p dist/webapp
+      - cp -r webapp/* dist/webapp/
     
 
   post_build:
     commands:
+      - echo "Resolving web bucket name"
+      - |
+        if [ -z "$WEB_BUCKET" ]; then 
+          if [ -z "$STACK_NAME" ]; then echo "STACK_NAME not set and WEB_BUCKET not provided" && exit 1; fi
+          export WEB_BUCKET=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query "Stacks[0].Outputs[?OutputKey=='WebAppBucketName'].OutputValue" --output text)
+        fi
+      - echo "Syncing dist/webapp -> s3://$WEB_BUCKET"
+      - aws s3 sync dist/webapp s3://$WEB_BUCKET --delete
       - echo "✅ Deployment complete!"

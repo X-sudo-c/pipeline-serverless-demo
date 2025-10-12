@@ -26,6 +26,69 @@ Resources:
             Path: /hello
             Method: get
 
+  # Static webapp hosting resources
+  WebAppBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  WebAppOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Access identity for WebApp CloudFront to S3
+
+  WebAppBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebAppBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontOAIRead
+            Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt WebAppOriginAccessIdentity.S3CanonicalUserId
+            Action:
+              - s3:GetObject
+            Resource: !Sub '${WebAppBucket.Arn}/*'
+
+  WebAppDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        Origins:
+          - DomainName: !GetAtt WebAppBucket.RegionalDomainName
+            Id: WebAppS3Origin
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${WebAppOriginAccessIdentity}'
+        DefaultCacheBehavior:
+          TargetOriginId: WebAppS3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+        PriceClass: PriceClass_100
+        HttpVersion: http2
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
@@ -39,3 +102,9 @@ Outputs:
   HelloWorldFunctionIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunctionRole.Arn
+  WebAppBucketName:
+    Description: "S3 bucket for hosting the static webapp"
+    Value: !Ref WebAppBucket
+  WebAppCloudFrontDomain:
+    Description: "CloudFront domain name for the static webapp"
+    Value: !GetAtt WebAppDistribution.DomainName
