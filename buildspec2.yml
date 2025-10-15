@@ -10,7 +10,7 @@ phases:
        - sam --version    
        - python --version 
        - pip --version 
-       - echo "omg everthing works and my pipline is healthy"
+       - echo "omg everthing works and my pipline is healthyy"
 
   build:
     commands:
